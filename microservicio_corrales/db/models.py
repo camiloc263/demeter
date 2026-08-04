@@ -1,0 +1,26 @@
+from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+# Configuración directa para ahorrar espacio
+engine = create_engine("sqlite:///./corrales.db", connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+class CorralORM(Base):
+    __tablename__ = "corrales"
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, unique=True, index=True, nullable=False)
+    capacidad_maxima = Column(Integer, nullable=False)
+
+    ancho_m = Column(Float, nullable=False)
+    largo_m = Column(Float, nullable=False)
+    area_m2 = Column(Float, nullable=False) # Aquí guardaremos el resultado
