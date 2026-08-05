@@ -1,0 +1,13 @@
+# Entornos virtuales
+venv/
+env/
+
+# Archivos de caché de Python
+__pycache__/
+*.pyc
+
+# Bases de datos locales (¡No se suben a GitHub por seguridad!)
+*.db
+
+# Archivos de entorno (contraseñas, secretos)
+.env

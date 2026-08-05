@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base
 
 # 1. URL DE LA BASE DE DATOS
 # Creará un archivo llamado 'granja.db' en tu carpeta raíz
-SQLALCHEMY_DATABASE_URL = "sqlite:///./granja.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./cerdo.db"
 
 # 2. MOTOR DE CONEXIÓN
 # check_same_thread=False es necesario solo para SQLite en FastAPI

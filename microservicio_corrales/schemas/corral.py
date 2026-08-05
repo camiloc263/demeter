@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from demeter_core.enums import EtapaCorral
 
 # 1. ESQUEMA BASE: Lo que recibimos del usuario
 class CorralBase(BaseModel):
@@ -9,6 +10,7 @@ class CorralBase(BaseModel):
     # Nuevos campos físicos
     ancho_m: float = Field(..., gt=0, description="Ancho del corral en metros")
     largo_m: float = Field(..., gt=0, description="Largo del corral en metros")
+    etapa: EtapaCorral = Field(..., description="Etapa productiva para la que fue diseñado el corral")
 
 class CorralCreate(CorralBase):
     pass
@@ -27,3 +29,4 @@ class CorralUpdate(BaseModel):
     capacidad_maxima: Optional[int] = Field(None, gt=0, description="Nueva capacidad")
     ancho_m: Optional[float] = Field(None, gt=0, description="Nuevo ancho")
     largo_m: Optional[float] = Field(None, gt=0, description="Nuevo largo")
+    etapa: Optional[EtapaCorral] = Field(None, description="Nueva etapa productiva")

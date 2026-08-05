@@ -23,7 +23,6 @@ class UsuarioResponse(UsuarioBase):
     class Config:
         from_attributes = True
 
-      
 # 5. Esquema para recibir los datos de inicio de sesión
 class LoginRequest(BaseModel):
     username: str

@@ -1,12 +1,15 @@
 from pydantic import BaseModel, Field
 from datetime import date
 from typing import Optional
+from demeter_core.enums import EtapaCorral
 
 # 1. ESQUEMA BASE: Lo que comparten todos los cerdos
 class CerdoBase(BaseModel):
     etiqueta: str = Field(..., description="Identificador único del cerdo (Ej: C-001)")
     raza: Optional[str] = Field(None, description="Raza del animal (Ej: Duroc)")
     fecha_nacimiento: date = Field(..., description="Fecha en formato YYYY-MM-DD")
+    etapa: EtapaCorral = Field(..., description="Etapa productiva para la que fue diseñado el corral")
+    madre_etiqueta: Optional[str] = Field(None, description="Etiqueta de la cerda madre (vacío si es comprado externamente)")
 
     # Validamos por seguridad que el peso siempre sea mayor a 0 (gt=0)
     peso_kg: float = Field(..., gt=0, description="Peso en kilogramos")
@@ -31,4 +34,6 @@ class CerdoUpdate(BaseModel):
     raza: Optional[str] = Field(None, description="Raza del animal")
     fecha_nacimiento: Optional[date] = None
     peso_kg: Optional[float] = Field(None, gt=0, description="Nuevo peso en kg")
-    corral: Optional[str] = Field(None, description="Nueva ubicación")      
+    corral: Optional[str] = Field(None, description="Nueva ubicación")    
+    etapa: EtapaCorral = Field(..., description="Etapa productiva para la que fue diseñado el corral")
+    madre_etiqueta: Optional[str] = Field(None, description="Etiqueta de la cerda madre (vacío si es comprado externamente)")  

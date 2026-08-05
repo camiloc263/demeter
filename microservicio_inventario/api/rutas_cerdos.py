@@ -5,15 +5,11 @@ from db.database import get_db
 from schemas import cerdo
 from db import repository
 from services import corrales_client
+from db import models
 
 
 # Creamos un "Router" para agrupar todas las rutas de los cerdos
 router = APIRouter(prefix="/cerdos", tags=["Inventario de Cerdos"])
-
-@router.post("/", response_model=cerdo.CerdoResponse)
-def crear_cerdo(nuevo_cerdo: cerdo.CerdoCreate, db: Session = Depends(get_db)):
-    """Registra un nuevo cerdo en la granja."""
-    return repository.registrar_cerdo(db=db, cerdo_in=nuevo_cerdo)
 
 @router.get("/", response_model=List[cerdo.CerdoResponse])
 def leer_cerdos(corral: Optional[str] = None, db: Session = Depends(get_db)):
@@ -49,21 +45,40 @@ def borrar_cerdo(cerdo_id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=cerdo.CerdoResponse)
 def crear_cerdo(nuevo_cerdo: cerdo.CerdoCreate, db: Session = Depends(get_db)):
-    """Registra un nuevo cerdo validando que el corral exista y tenga espacio."""
+    """Registra un nuevo cerdo validando espacio y etapa del corral."""
     
-    # 1. Traemos la información del corral desde el Microservicio de Corrales
+    # 1. Traemos la información del corral (¡Aquí viene la etapa del corral!)
     datos_corral = corrales_client.verificar_corral_existe(nuevo_cerdo.corral)
     capacidad_maxima = datos_corral["capacidad_maxima"]
+    etapa_corral = datos_corral.get("etapa") # Obtenemos la etapa
     
-    # 2. Contamos cuántos cerdos hay ACTUALMENTE en ese corral (en el Inventario)
-    cerdos_actuales = repository.contar_cerdos_por_corral(db, nuevo_cerdo.corral)
-    
-    # 3. LA VALIDACIÓN MAESTRA
-    if cerdos_actuales >= capacidad_maxima:
+    # 2. VALIDACIÓN DE ETAPA (La nueva regla de negocio)
+    if nuevo_cerdo.etapa.value != etapa_corral:
         raise HTTPException(
-            status_code=400, # 400 Bad Request: El usuario está pidiendo algo imposible
-            detail=f"Hacinamiento evitado: El {nuevo_cerdo.corral} tiene una capacidad máxima de {capacidad_maxima} cerdos y ya está lleno."
+            status_code=400,
+            detail=f"Incompatibilidad: Estás intentando meter un cerdo de '{nuevo_cerdo.etapa.value}' en un corral diseñado para '{etapa_corral}'."
         )
     
-    # 4. Si hay espacio, guardamos el cerdo exitosamente
+    # 3. Contamos los cerdos actuales
+    cerdos_actuales = repository.contar_cerdos_por_corral(db, nuevo_cerdo.corral)
+    
+    # 4. VALIDACIÓN DE HACINAMIENTO
+    if cerdos_actuales >= capacidad_maxima:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Hacinamiento evitado: El {nuevo_cerdo.corral} ya está lleno."
+        )
+    
+    # Si todo está bien, guardamos
     return repository.registrar_cerdo(db=db, cerdo_in=nuevo_cerdo)
+
+@router.get("/madre/{etiqueta_madre}/lechones", response_model=List[cerdo.CerdoResponse])
+def obtener_camada_de_cerda(etiqueta_madre: str, db: Session = Depends(get_db)):
+    """Devuelve la lista de todos los lechones que pertenecen a una madre específica."""
+    
+    lechones = db.query(models.CerdoORM).filter(models.CerdoORM.madre_etiqueta == etiqueta_madre).all()
+    
+    if not lechones:
+        raise HTTPException(status_code=404, detail=f"No se encontraron lechones registrados para la madre {etiqueta_madre}")
+        
+    return lechones

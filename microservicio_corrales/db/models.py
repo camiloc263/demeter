@@ -24,3 +24,4 @@ class CorralORM(Base):
     ancho_m = Column(Float, nullable=False)
     largo_m = Column(Float, nullable=False)
     area_m2 = Column(Float, nullable=False) # Aquí guardaremos el resultado
+    etapa = Column(String, nullable=False) # Nueva columna para la etapa

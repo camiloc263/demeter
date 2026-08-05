@@ -11,3 +11,5 @@ class CerdoORM(Base):
     fecha_nacimiento = Column(Date, nullable=False)
     peso_kg = Column(Float, nullable=False)
     corral = Column(String, nullable=False)
+    etapa = Column(String, nullable=False)
+    madre_etiqueta = Column(String, index=True, nullable=True)
