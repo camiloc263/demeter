@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from enum import Enum
+from typing import Optional
 
 # 1. Definimos los roles permitidos de forma estricta
 class RolUsuario(str, Enum):
@@ -16,7 +17,7 @@ class UsuarioBase(BaseModel):
 class UsuarioCreate(UsuarioBase):
     password: str = Field(..., min_length=6, description="Contraseña del usuario (mínimo 6 caracteres)")
 
-# 4. Esquema de Respuesta (NUNCA devolvemos la contraseña por seguridad)
+# 4. Esquema de Respuesta (NUNCA divulgamos la contraseña por seguridad)
 class UsuarioResponse(UsuarioBase):
     id: int
     
@@ -33,3 +34,4 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     rol: str
+    refresh_token: Optional[str] = None
