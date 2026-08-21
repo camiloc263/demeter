@@ -1,34 +1,38 @@
+import uvicorn
 from fastapi import FastAPI
-from db.database import engine, Base 
-from db import models
-from api import rutas_cerdos
+from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 
-# --------------------------------------------------------
-# INICIALIZACIÓN DE LA APLICACIÓN (Capa de Presentación)
-# --------------------------------------------------------
-# Creamos la instancia de FastAPI con el título de tu proyecto
-app = FastAPI(
-    title="API de Inventario - Granja Porcina",
-    description="Microservicio para la gestión de animales, razas y corrales.",
-    version="1.0.0"
+from api.rutas_cerdos import router
+
+from db.database import engine
+from db import models
+
+# Crear tablas si no existen
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+app.add_middleware(
+    SlowAPIMiddleware,
+    limiter=Limiter(key_func=get_remote_address, default_limits=["120/minute"])
 )
 
-# Creamos las tablas en la base de datos (si no existen)
-Base.metadata.create_all(bind=engine)
+# CORS permisivo (ajustar en producción)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# --------------------------------------------------------
-# RUTAS BÁSICAS (Endpoints)
-# --------------------------------------------------------
-@app.get("/", tags=["Sistema"])
-def estado_del_sistema():
-    """
-    Ruta de prueba para verificar que el microservicio está funcionando.
-    (Health Check)
-    """
-    return {
-        "mensaje": "¡Hola, Arquitecto! El Microservicio de Inventario está en línea y funcionando.",
-        "estado": "OK"
-    }
+app.include_router(router)
 
-# Conectamos las rutas del módulo de cerdos a la aplicación principal
-app.include_router(rutas_cerdos.router) 
+@app.get("/", tags=["Health"])
+async def health_check():
+    return {"status": "OK", "service": "Inventario"}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8003, reload=True)
