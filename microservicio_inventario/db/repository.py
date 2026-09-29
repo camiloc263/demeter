@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models
-from schemas import cerdo
+from ..schemas import cerdo
 
 def registrar_cerdo(db: Session, cerdo_in: cerdo.CerdoCreate):
     """Toma los datos validados y los guarda en la base de datos."""

@@ -1,0 +1,105 @@
+<div class="page-head">
+  <div>
+    <h1>Predicción de dieta (IA)</h1>
+    <p>Recomendación de ración por Machine Learning, y consulta del historial de comederos automáticos por RFID. Esto es complementario a "Alimentación" (que registra raciones agregadas por corral) — ver ARQUITECTURA.md sección 3.</p>
+  </div>
+</div>
+
+<section class="card panel calculadora">
+  <h2>Calcular ración recomendada</h2>
+  <form [formGroup]="formDieta" (ngSubmit)="predecir()">
+    <div class="field-row">
+      <div class="field">
+        <label for="edad">Edad (días)</label>
+        <input id="edad" type="number" min="1" max="400" formControlName="edad_dias" />
+      </div>
+      <div class="field">
+        <label for="peso">Peso actual (kg)</label>
+        <input id="peso" type="number" min="0.1" step="0.1" formControlName="peso_actual_kg" />
+      </div>
+      <div class="field">
+        <label for="temp">Temperatura ambiente (°C)</label>
+        <input id="temp" type="number" formControlName="temperatura_c" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="formDieta.invalid || calculando()">
+      {{ calculando() ? 'Calculando…' : 'Calcular' }}
+    </button>
+  </form>
+
+  @if (prediccion(); as p) {
+    <div class="resultado" [class.resultado-advertencia]="hayAdvertencia">
+      <div class="resultado-cifras">
+        <div>
+          <span class="resultado-label">Ración recomendada</span>
+          <span class="resultado-valor">{{ p.racion_recomendada_kg }} kg</span>
+        </div>
+        <div>
+          <span class="resultado-label">Costo estimado</span>
+          <span class="resultado-valor">{{ '$' + p.costo_estimado_usd }}</span>
+        </div>
+      </div>
+      <p class="resultado-analisis">{{ p.analisis }}</p>
+    </div>
+  }
+</section>
+
+<section class="card panel historial-panel">
+  <h2>Historial de comedero por RFID</h2>
+  <form [formGroup]="formHistorial" (ngSubmit)="buscarHistorial()" class="busqueda-form">
+    <div class="field">
+      <label for="rfid">Etiqueta / RFID del cerdo</label>
+      <input id="rfid" type="text" formControlName="rfid" placeholder="ej. C-001" />
+    </div>
+    <button type="submit" class="btn btn-secondary" [disabled]="formHistorial.invalid || buscando()">
+      {{ buscando() ? 'Buscando…' : 'Buscar' }}
+    </button>
+  </form>
+
+  @if (buscando()) {
+    <div class="loading-row"><span class="spinner"></span> Consultando…</div>
+  } @else if (buscado()) {
+    @if (cerdo() === null) {
+      <div class="callout">
+        Ese RFID no corresponde a ningún cerdo del inventario — puede ser un dato de prueba o un error de tipeo. Aun así, se muestra el historial de comedero que exista para él.
+      </div>
+    }
+    @if (cerdo(); as c) {
+      <div class="cerdo-card">
+        <div><span>Corral</span><strong>{{ c.corral }}</strong></div>
+        <div><span>Etapa</span><strong>{{ c.etapa }}</strong></div>
+        <div><span>Peso registrado</span><strong>{{ c.peso_kg }} kg</strong></div>
+        @if (c.raza) { <div><span>Raza</span><strong>{{ c.raza }}</strong></div> }
+      </div>
+    }
+
+    @if (historial().length === 0) {
+      <p class="hint sin-resultados">No hay eventos de comedero registrados para este RFID.</p>
+    } @else {
+      @if (resumen(); as r) {
+        <div class="resumen-grid">
+          <div><span class="resumen-label">Eventos</span><span class="resumen-valor">{{ r.eventos }}</span></div>
+          <div><span class="resumen-label">Total servido</span><span class="resumen-valor">{{ r.totalKg }} kg</span></div>
+          <div><span class="resumen-label">Promedio por comida</span><span class="resumen-valor">{{ r.promedioKg }} kg</span></div>
+          <div><span class="resumen-label">Última vez</span><span class="resumen-valor resumen-fecha">{{ r.ultima | date: 'd MMM, HH:mm' }}</span></div>
+        </div>
+      }
+
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Fecha</th><th>Corral</th><th>Ración</th></tr></thead>
+          <tbody>
+            @for (r of historial(); track r.id) {
+              <tr>
+                <td class="mono">{{ r.fecha_hora | date: 'd MMM, HH:mm' }}</td>
+                <td>{{ r.corral }}</td>
+                <td class="num">{{ r.racion_servida_kg }} kg</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</section>

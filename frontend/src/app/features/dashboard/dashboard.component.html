@@ -1,0 +1,46 @@
+<div class="page-head">
+  <div>
+    <h1>Hola, {{ auth.usuarioActual()?.username }}</h1>
+    <p>Esto es lo que pasa hoy en la granja.</p>
+  </div>
+</div>
+
+@if (cargando()) {
+  <div class="loading-row"><span class="spinner"></span> Cargando resumen…</div>
+} @else {
+  @if (errores().length) {
+    <div class="card notice">
+      @for (e of errores(); track e) { <p>{{ e }}</p> }
+    </div>
+  }
+
+  <div class="stat-grid">
+    <a routerLink="/corrales" class="stat-card card">
+      <span class="stat-icon">▦</span>
+      <span class="stat-value">{{ resumen().corrales }}</span>
+      <span class="stat-label">Corrales activos</span>
+    </a>
+    <a routerLink="/inventario" class="stat-card card">
+      <span class="stat-icon">◍</span>
+      <span class="stat-value">{{ resumen().cerdos }}</span>
+      <span class="stat-label">Cerdos en inventario</span>
+    </a>
+    <a routerLink="/ordenes" class="stat-card card">
+      <span class="stat-icon">▤</span>
+      <span class="stat-value">{{ resumen().ordenesPendientes }}</span>
+      <span class="stat-label">Órdenes pendientes</span>
+    </a>
+  </div>
+
+  <div class="quick-links card">
+    <h2>Accesos rápidos</h2>
+    <div class="quick-grid">
+      <a routerLink="/corrales">+ Nuevo corral</a>
+      <a routerLink="/inventario">+ Registrar cerdo</a>
+      <a routerLink="/alimentacion">+ Registrar alimentación</a>
+      <a routerLink="/ordenes">+ Generar orden de trabajo</a>
+      <a routerLink="/alimentacion-ia">✦ Calcular dieta con IA</a>
+      <a routerLink="/clima">☁ Consultar clima</a>
+    </div>
+  </div>
+}

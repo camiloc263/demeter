@@ -1,11 +1,12 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from db.database import get_db
-from schemas import cerdo
-from db import repository
-from services import corrales_client
-from db import models
+from ..db.database import get_db
+from ..schemas import cerdo
+from ..db import repository
+from ..services import corrales_client
+from ..db import models
+from demeter_core.auth import obtener_usuario_actual
 
 
 # Creamos un "Router" para agrupar todas las rutas de los cerdos
@@ -28,7 +29,12 @@ def leer_cerdo_por_id(cerdo_id: int, db: Session = Depends(get_db)):
     return db_cerdo
 
 @router.patch("/{cerdo_id}", response_model=cerdo.CerdoResponse)
-def actualizar_datos_cerdo(cerdo_id: int, datos: cerdo.CerdoUpdate, db: Session = Depends(get_db)):
+def actualizar_datos_cerdo(
+    cerdo_id: int,
+    datos: cerdo.CerdoUpdate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Actualiza los datos de un cerdo (Ej: Registrar un nuevo peso)."""
     db_cerdo = repository.actualizar_cerdo(db, cerdo_id, datos)
     if db_cerdo is None:
@@ -36,7 +42,11 @@ def actualizar_datos_cerdo(cerdo_id: int, datos: cerdo.CerdoUpdate, db: Session 
     return db_cerdo
 
 @router.delete("/{cerdo_id}", status_code=status.HTTP_204_NO_CONTENT)
-def borrar_cerdo(cerdo_id: int, db: Session = Depends(get_db)):
+def borrar_cerdo(
+    cerdo_id: int,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Elimina un cerdo del sistema."""
     db_cerdo = repository.eliminar_cerdo(db, cerdo_id)
     if db_cerdo is None:
@@ -44,7 +54,11 @@ def borrar_cerdo(cerdo_id: int, db: Session = Depends(get_db)):
     return None # El código 204 significa "Éxito, pero no hay nada que mostrar"
 
 @router.post("/", response_model=cerdo.CerdoResponse)
-def crear_cerdo(nuevo_cerdo: cerdo.CerdoCreate, db: Session = Depends(get_db)):
+def crear_cerdo(
+    nuevo_cerdo: cerdo.CerdoCreate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Registra un nuevo cerdo validando espacio y etapa del corral."""
     
     # 1. Traemos la información del corral (¡Aquí viene la etapa del corral!)

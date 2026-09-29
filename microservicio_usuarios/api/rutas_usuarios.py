@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from db import models
-from db.models import get_db
-from schemas import usuario
-from core import security
+from ..db import models
+from ..db.models import get_db
+from ..schemas import usuario
+from ..core import security
+from demeter_core.auth import requiere_rol
 
 router = APIRouter(prefix="/usuarios", tags=["Gestión de Usuarios y Seguridad"])
 
@@ -70,8 +71,11 @@ def login(credenciales: usuario.LoginRequest, db: Session = Depends(get_db)):
     }
 
 @router.get("/", response_model=List[usuario.UsuarioResponse])
-def listar_usuarios(db: Session = Depends(get_db)):
-    """Obtiene la lista de todos los usuarios registrados."""
+def listar_usuarios(
+    db: Session = Depends(get_db),
+    _usuario_actual=Depends(requiere_rol("administrador")),
+):
+    """Obtiene la lista de todos los usuarios registrados. Solo administradores."""
     return db.query(models.UsuarioORM).all()
 
 @router.post("/refresh", response_model=usuario.Token)

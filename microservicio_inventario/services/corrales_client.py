@@ -1,11 +1,14 @@
+import os
+
 import requests
 from fastapi import HTTPException
 
-CORRALES_URL = "http://127.0.0.1:8002"
+# microservicio_corrales corre en el puerto 8001 (ver microservicio_corrales/main.py y .env)
+CORRALES_URL = os.getenv("CORRALES_URL", "http://127.0.0.1:8001").rstrip("/")
 
 def verificar_corral_existe(nombre_corral: str):
     try:
-        respuesta = requests.get(f"{CORRALES_URL}/corrales/{nombre_corral}")
+        respuesta = requests.get(f"{CORRALES_URL}/corrales/{nombre_corral}", timeout=5)
         
         if respuesta.status_code == 404:
             raise HTTPException(

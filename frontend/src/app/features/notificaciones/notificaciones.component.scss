@@ -1,0 +1,14 @@
+.panel { padding: 1.4rem 1.5rem; margin-bottom: 1.25rem; }
+.panel h2 { font-size: 1.02rem; margin-bottom: 1rem; }
+
+.resultado {
+  margin-top: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  max-width: 520px;
+}
+.resultado-espera { background: var(--surface-2); border-left-color: var(--ink-faint); }
+.resultado .badge { margin-bottom: .5rem; }
+.resultado p { margin: 0; font-size: .88rem; color: var(--ink); }

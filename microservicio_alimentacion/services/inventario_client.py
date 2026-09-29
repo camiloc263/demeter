@@ -1,8 +1,10 @@
+import os
+
 import requests
 from fastapi import HTTPException
 
-# URL base de tu microservicio de Inventario (Puerto 8000)
-INVENTARIO_URL = "http://127.0.0.1:8000"
+# microservicio_inventario corre en el puerto 8003 (ver microservicio_inventario/main.py y .env)
+INVENTARIO_URL = os.getenv("INVENTORY_URL", "http://127.0.0.1:8003").rstrip("/")
 
 def verificar_corral_existe(nombre_corral: str):
     """
@@ -11,7 +13,7 @@ def verificar_corral_existe(nombre_corral: str):
     """
     try:
         # Hacemos la llamada HTTP como si fuéramos Postman
-        respuesta = requests.get(f"{INVENTARIO_URL}/cerdos/?corral={nombre_corral}")
+        respuesta = requests.get(f"{INVENTARIO_URL}/cerdos/?corral={nombre_corral}", timeout=5)
         
         # Si el servicio de inventario da un error interno, avisamos
         if respuesta.status_code != 200:

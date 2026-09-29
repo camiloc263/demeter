@@ -1,0 +1,143 @@
+<div class="page-head">
+  <div>
+    <h1>Órdenes de trabajo</h1>
+    <p>Fórmulas de alimento calculadas según el manual operativo (SOP) para cada lote.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirNuevo()">+ Generar orden</button>
+</div>
+
+@if (cargando()) {
+  <div class="loading-row"><span class="spinner"></span> Cargando órdenes…</div>
+} @else if (ordenes().length === 0) {
+  <div class="card empty-state">
+    <span class="glyph">▤</span>
+    <p>No hay órdenes de trabajo pendientes.</p>
+    <button type="button" class="btn btn-primary" (click)="abrirNuevo()">Generar la primera</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Código</th><th>Corral</th><th>Total</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (o of ordenes(); track o.id) {
+          <tr>
+            <td class="mono">{{ o.codigo_orden }}</td>
+            <td>{{ o.corral_objetivo }}</td>
+            <td class="num">{{ o.total_raciones_kg }} kg</td>
+            <td><span class="badge badge-amber">{{ o.estado }}</span></td>
+            <td class="actions">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="verDetalle(o)">Ver / completar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<!-- Modal: generar orden -->
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>Generar orden de trabajo</h2>
+        <button type="button" class="modal-close" (click)="cerrarModal()" aria-label="Cerrar">×</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="generar()">
+        <div class="field">
+          <label for="corral">Corral</label>
+          <select id="corral" formControlName="nombre_corral">
+            <option value="" disabled>Selecciona un corral</option>
+            @for (c of corrales(); track c.id) { <option [value]="c.nombre">{{ c.nombre }}</option> }
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="numero">Número de cerdos</label>
+            <input id="numero" type="number" min="1" formControlName="numero_cerdos" />
+          </div>
+          <div class="field">
+            <label for="peso">Peso promedio (kg)</label>
+            <input id="peso" type="number" min="1" step="0.5" formControlName="peso_promedio_kg" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="etapa">Etapa</label>
+            <select id="etapa" formControlName="etapa">
+              @for (e of etapas; track e) { <option [value]="e">{{ e }}</option> }
+            </select>
+          </div>
+          <div class="field">
+            <label for="temp">Temperatura actual (°C)</label>
+            <input id="temp" type="number" formControlName="temperatura_actual_c" />
+          </div>
+        </div>
+        <p class="hint">La ración se ajusta automáticamente por estrés calórico, y se bloquea si el peso promedio llega a 110 kg (protocolo de pre-faena).</p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || guardando()">
+            {{ guardando() ? 'Calculando…' : 'Generar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal: detalle / completar -->
+@if (detalle(); as o) {
+  <div class="modal-backdrop" (click)="cerrarDetalle()">
+    <div class="modal modal-wide" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>Orden {{ o.codigo_orden }}</h2>
+        <button type="button" class="modal-close" (click)="cerrarDetalle()" aria-label="Cerrar">×</button>
+      </div>
+
+      <p class="detalle-meta">
+        Corral <strong>{{ o.corral_objetivo }}</strong> · Total <strong>{{ o.total_raciones_kg }} kg</strong> ·
+        <span class="badge badge-amber">{{ o.estado }}</span>
+      </p>
+
+      <h3>Receta del lote</h3>
+      <div class="receta-grid">
+        <div><span>Maíz amarillo</span><strong>{{ o.receta_preparacion_lote.maiz_amarillo_kg }} kg</strong></div>
+        <div><span>Mogolla fina</span><strong>{{ o.receta_preparacion_lote.mogolla_fina_kg }} kg</strong></div>
+        <div><span>Mogolla gruesa</span><strong>{{ o.receta_preparacion_lote.mogolla_gruesa_kg }} kg</strong></div>
+        <div><span>Cal agrícola</span><strong>{{ o.receta_preparacion_lote.cal_agricola_kg }} kg</strong></div>
+        <div><span>Sal mineral</span><strong>{{ o.receta_preparacion_lote.sal_mineral_kg }} kg</strong></div>
+        <div><span>Harina de pescado</span><strong>{{ o.receta_preparacion_lote.harina_pescado_kg }} kg</strong></div>
+        <div><span>Hidratación</span><strong>{{ o.receta_preparacion_lote.liquido_hidratacion_litros }} L</strong></div>
+      </div>
+
+      <h3>Instrucciones (SOP)</h3>
+      <ol class="instrucciones">
+        @for (paso of o.instrucciones_sop; track paso) { <li>{{ paso }}</li> }
+      </ol>
+
+      <h3>Marcar como completada</h3>
+      <form [formGroup]="operarioForm" (ngSubmit)="completar()">
+        <div class="field">
+          <label for="operario">Operario responsable</label>
+          <input id="operario" type="text" formControlName="operario_responsable" placeholder="Tu nombre" />
+        </div>
+        <div class="field">
+          <label for="obs">Observaciones (opcional)</label>
+          <textarea id="obs" rows="2" formControlName="observaciones"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="operarioForm.invalid || completando() !== null">
+            {{ completando() ? 'Guardando…' : 'Confirmar preparación' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

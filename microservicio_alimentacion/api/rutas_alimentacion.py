@@ -1,16 +1,21 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from db.database import get_db
-from schemas import registro
-from db import repository
-from services import inventario_client
+from ..db.database import get_db
+from ..schemas import registro
+from ..db import repository
+from ..services import inventario_client
 from fastapi import APIRouter, Depends, HTTPException, status
+from demeter_core.auth import obtener_usuario_actual
 
 router = APIRouter(prefix="/alimentacion", tags=["Gestión de Alimentación"])
 
 @router.post("/", response_model=registro.RegistroResponse)
-def registrar_alimento(nuevo_registro: registro.RegistroCreate, db: Session = Depends(get_db)):
+def registrar_alimento(
+    nuevo_registro: registro.RegistroCreate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Registra una ración de comida entregada a un corral."""
 
 
@@ -34,7 +39,12 @@ def leer_registro_por_id(registro_id: int, db: Session = Depends(get_db)):
     return db_registro
 
 @router.patch("/{registro_id}", response_model=registro.RegistroResponse)
-def corregir_registro(registro_id: int, datos: registro.RegistroUpdate, db: Session = Depends(get_db)):
+def corregir_registro(
+    registro_id: int,
+    datos: registro.RegistroUpdate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Corrige un registro (Ej: si el operario anotó mal los kilos o el corral)."""
     
     # REGLA DE NEGOCIO: Si el usuario intenta cambiar el corral, validamos que el nuevo corral exista
@@ -47,7 +57,11 @@ def corregir_registro(registro_id: int, datos: registro.RegistroUpdate, db: Sess
     return db_registro
 
 @router.delete("/{registro_id}", status_code=status.HTTP_204_NO_CONTENT)
-def borrar_registro(registro_id: int, db: Session = Depends(get_db)):
+def borrar_registro(
+    registro_id: int,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Elimina un registro de comida del sistema."""
     db_registro = repository.eliminar_registro(db, registro_id)
     if db_registro is None:

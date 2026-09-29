@@ -1,0 +1,35 @@
+.modal-wide { max-width: 560px; }
+
+.detalle-meta {
+  color: var(--ink-muted);
+  font-size: .88rem;
+  margin: -.5rem 0 1.25rem;
+}
+.detalle-meta strong { color: var(--ink); }
+
+h3 { font-size: .92rem; margin: 1.1rem 0 .6rem; }
+
+.receta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: .5rem .9rem;
+  margin-bottom: .5rem;
+}
+.receta-grid div {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .4rem .6rem;
+  background: var(--surface-2);
+  border-radius: 6px;
+  font-size: .82rem;
+}
+.receta-grid span { color: var(--ink-muted); }
+
+.instrucciones {
+  padding-left: 1.3rem;
+  font-size: .86rem;
+  color: var(--ink);
+  margin: 0 0 .5rem;
+}
+.instrucciones li { margin-bottom: .35rem; }

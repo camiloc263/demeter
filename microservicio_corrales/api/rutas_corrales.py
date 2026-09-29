@@ -1,15 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from db import models
-from db.models import get_db
-from schemas import corral
+from ..db import models
+from ..db.models import get_db
+from ..schemas import corral
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
+from demeter_core.auth import obtener_usuario_actual
 
 router = APIRouter(prefix="/corrales", tags=["Gestión de Corrales"])
 
 @router.post("/", response_model=corral.CorralResponse)
-def crear_corral(nuevo_corral: corral.CorralCreate, db: Session = Depends(get_db)):
+def crear_corral(
+    nuevo_corral: corral.CorralCreate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Crea un corral y calcula su área automáticamente."""
     
     # 1. Convertimos los datos que envió el usuario a un diccionario manipulable
@@ -42,7 +47,12 @@ def obtener_todos_los_corrales(db: Session = Depends(get_db)):
 
 
 @router.patch("/{corral_id}", response_model=corral.CorralResponse)
-def actualizar_corral(corral_id: int, datos_actualizados: corral.CorralUpdate, db: Session = Depends(get_db)):
+def actualizar_corral(
+    corral_id: int,
+    datos_actualizados: corral.CorralUpdate,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Actualiza los datos de un corral y recalcula el área si es necesario."""
     db_corral = db.query(models.CorralORM).filter(models.CorralORM.id == corral_id).first()
     
@@ -69,7 +79,11 @@ def actualizar_corral(corral_id: int, datos_actualizados: corral.CorralUpdate, d
 
 
 @router.delete("/{corral_id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_corral(corral_id: int, db: Session = Depends(get_db)):
+def eliminar_corral(
+    corral_id: int,
+    db: Session = Depends(get_db),
+    _usuario=Depends(obtener_usuario_actual),
+):
     """Demuele (elimina) un corral del sistema."""
     db_corral = db.query(models.CorralORM).filter(models.CorralORM.id == corral_id).first()
     

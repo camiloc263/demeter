@@ -1,0 +1,121 @@
+<div class="page-head">
+  <div>
+    <h1>Inventario</h1>
+    <p>Cerdos registrados, su corral, etapa y peso.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirNuevo()">+ Registrar cerdo</button>
+</div>
+
+<div class="filter-row">
+  <label for="filtro">Filtrar por corral</label>
+  <select id="filtro" [ngModel]="filtroCorral()" (ngModelChange)="aplicarFiltro($event)" name="filtro">
+    <option value="">Todos los corrales</option>
+    @for (c of corrales(); track c.id) { <option [value]="c.nombre">{{ c.nombre }}</option> }
+  </select>
+</div>
+
+@if (cargando()) {
+  <div class="loading-row"><span class="spinner"></span> Cargando inventario…</div>
+} @else if (cerdos().length === 0) {
+  <div class="card empty-state">
+    <span class="glyph">◍</span>
+    <p>No hay cerdos {{ filtroCorral() ? 'en este corral' : 'registrados todavía' }}.</p>
+    <button type="button" class="btn btn-primary" (click)="abrirNuevo()">Registrar el primero</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Etiqueta</th>
+          <th>Corral</th>
+          <th>Etapa</th>
+          <th>Peso</th>
+          <th>Raza</th>
+          <th>Nacimiento</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of cerdos(); track c.id) {
+          <tr>
+            <td><span class="mono">{{ c.etiqueta }}</span></td>
+            <td>{{ c.corral }}</td>
+            <td><span class="badge badge-accent">{{ c.etapa }}</span></td>
+            <td class="num">{{ c.peso_kg }} kg</td>
+            <td>{{ c.raza || '—' }}</td>
+            <td>{{ c.fecha_nacimiento }}</td>
+            <td class="actions">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="abrirEditar(c)">Editar</button>
+              <button type="button" class="btn btn-danger btn-sm" (click)="eliminar(c)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>{{ editando() ? 'Editar cerdo' : 'Registrar cerdo' }}</h2>
+        <button type="button" class="modal-close" (click)="cerrarModal()" aria-label="Cerrar">×</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="field-row">
+          <div class="field">
+            <label for="etiqueta">Etiqueta (identificador único)</label>
+            <input id="etiqueta" type="text" formControlName="etiqueta" placeholder="ej. C-001" />
+          </div>
+          <div class="field">
+            <label for="raza">Raza</label>
+            <input id="raza" type="text" formControlName="raza" placeholder="ej. Duroc" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="corral">Corral</label>
+          <select id="corral" formControlName="corral">
+            <option value="" disabled>Selecciona un corral</option>
+            @for (c of corrales(); track c.id) { <option [value]="c.nombre">{{ c.nombre }} ({{ c.etapa }})</option> }
+          </select>
+          <span class="hint">Debe coincidir con la etapa del corral y respetar su capacidad máxima.</span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="etapa">Etapa</label>
+            <select id="etapa" formControlName="etapa">
+              @for (e of etapas; track e) { <option [value]="e">{{ e }}</option> }
+            </select>
+          </div>
+          <div class="field">
+            <label for="peso">Peso (kg)</label>
+            <input id="peso" type="number" min="0.1" step="0.1" formControlName="peso_kg" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="nacimiento">Fecha de nacimiento</label>
+            <input id="nacimiento" type="date" formControlName="fecha_nacimiento" />
+          </div>
+          <div class="field">
+            <label for="madre">Etiqueta de la madre (opcional)</label>
+            <input id="madre" type="text" formControlName="madre_etiqueta" placeholder="si aplica" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || guardando()">
+            {{ guardando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

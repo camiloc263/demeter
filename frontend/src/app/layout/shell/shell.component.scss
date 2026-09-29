@@ -1,0 +1,104 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-w);
+  flex: none;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 1.4rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 0 .5rem;
+  margin-bottom: 1.75rem;
+}
+.brand-glyph { font-size: 1.3rem; }
+.brand-name {
+  font-family: "Fraunces", serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .6rem .75rem;
+  border-radius: 6px;
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-size: .88rem;
+  font-weight: 500;
+  transition: background .12s ease, color .12s ease;
+}
+.nav-item:hover { background: var(--surface-2); color: var(--ink); }
+.nav-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+.nav-icon {
+  width: 1.4rem;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--ink-faint);
+}
+.nav-item.active .nav-icon { color: var(--accent); }
+
+.sidebar-foot {
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: 0 .5rem;
+  margin-bottom: .6rem;
+}
+.user-avatar {
+  width: 2rem; height: 2rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: .85rem;
+  flex: none;
+}
+.user-meta { display: flex; flex-direction: column; min-width: 0; }
+.user-name { font-size: .84rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-rol { font-size: .72rem; color: var(--ink-faint); text-transform: capitalize; }
+
+.logout-btn { width: 100%; justify-content: center; }
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: 2.25rem clamp(1.25rem, 4vw, 3rem);
+}
+
+@media (max-width: 860px) {
+  .shell { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; flex-direction: row; align-items: center; padding: .75rem 1rem; }
+  .brand { margin-bottom: 0; }
+  .nav { flex-direction: row; overflow-x: auto; }
+  .sidebar-foot { display: none; }
+}

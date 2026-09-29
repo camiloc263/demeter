@@ -1,11 +1,13 @@
+import os
+
 import requests
 from fastapi import HTTPException
 
-# URL del Microservicio de Corrales
-CORRALES_SERVICE_URL = "http://127.0.0.1:8002/corrales/"
+# microservicio_corrales corre en el puerto 8001 (ver microservicio_corrales/main.py y .env)
+CORRALES_SERVICE_URL = os.getenv("CORRALES_URL", "http://127.0.0.1:8001").rstrip("/") + "/corrales/"
 
 def verificar_corral_existe(nombre_corral: str):
-    """Consulta al Microservicio de Corrales (puerto 8002) para verificar la existencia del corral."""
+    """Consulta al Microservicio de Corrales para verificar la existencia del corral."""
     try:
         respuesta = requests.get(CORRALES_SERVICE_URL, timeout=3.0)
         
@@ -29,5 +31,5 @@ def verificar_corral_existe(nombre_corral: str):
     except requests.exceptions.RequestException:
         raise HTTPException(
             status_code=503,
-            detail="Error de comunicación: El Microservicio de Corrales (puerto 8002) está fuera de línea."
+            detail="Error de comunicación: El Microservicio de Corrales está fuera de línea."
         )

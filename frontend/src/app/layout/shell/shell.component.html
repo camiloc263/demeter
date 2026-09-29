@@ -1,0 +1,36 @@
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-glyph">🌾</span>
+      <span class="brand-name">Demeter</span>
+    </div>
+
+    <nav class="nav">
+      @for (item of nav; track item.ruta) {
+        <a [routerLink]="item.ruta" routerLinkActive="active" class="nav-item">
+          <span class="nav-icon">{{ item.icono }}</span>
+          {{ item.etiqueta }}
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-foot">
+      @if (usuario(); as u) {
+        <div class="user-chip">
+          <span class="user-avatar">{{ u.username.charAt(0).toUpperCase() }}</span>
+          <div class="user-meta">
+            <span class="user-name">{{ u.username }}</span>
+            <span class="user-rol">{{ u.rol }}</span>
+          </div>
+        </div>
+      }
+      <button type="button" class="btn btn-ghost btn-sm logout-btn" (click)="salir()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<app-toast></app-toast>

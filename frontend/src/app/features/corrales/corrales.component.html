@@ -1,0 +1,96 @@
+<div class="page-head">
+  <div>
+    <h1>Corrales</h1>
+    <p>Capacidad, medidas y etapa productiva de cada corral de la granja.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirNuevo()">+ Nuevo corral</button>
+</div>
+
+@if (cargando()) {
+  <div class="loading-row"><span class="spinner"></span> Cargando corrales…</div>
+} @else if (corrales().length === 0) {
+  <div class="card empty-state">
+    <span class="glyph">▦</span>
+    <p>Todavía no hay corrales registrados.</p>
+    <button type="button" class="btn btn-primary" (click)="abrirNuevo()">Crear el primero</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Etapa</th>
+          <th>Capacidad</th>
+          <th>Medidas</th>
+          <th>Área</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of corrales(); track c.id) {
+          <tr>
+            <td>{{ c.nombre }}</td>
+            <td><span class="badge badge-accent">{{ c.etapa }}</span></td>
+            <td class="num">{{ c.capacidad_maxima }} cerdos</td>
+            <td class="num">{{ c.ancho_m }} × {{ c.largo_m }} m</td>
+            <td class="num">{{ c.area_m2 }} m²</td>
+            <td class="actions">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="abrirEditar(c)">Editar</button>
+              <button type="button" class="btn btn-danger btn-sm" (click)="eliminar(c)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>{{ editando() ? 'Editar corral' : 'Nuevo corral' }}</h2>
+        <button type="button" class="modal-close" (click)="cerrarModal()" aria-label="Cerrar">×</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" type="text" formControlName="nombre" placeholder="ej. Corral A" />
+        </div>
+
+        <div class="field">
+          <label for="etapa">Etapa productiva</label>
+          <select id="etapa" formControlName="etapa">
+            @for (e of etapas; track e) { <option [value]="e">{{ e }}</option> }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="capacidad">Capacidad máxima (cerdos)</label>
+          <input id="capacidad" type="number" min="1" formControlName="capacidad_maxima" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="ancho">Ancho (m)</label>
+            <input id="ancho" type="number" min="0.1" step="0.1" formControlName="ancho_m" />
+          </div>
+          <div class="field">
+            <label for="largo">Largo (m)</label>
+            <input id="largo" type="number" min="0.1" step="0.1" formControlName="largo_m" />
+          </div>
+        </div>
+        <p class="hint">El área se calcula automáticamente (ancho × largo).</p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || guardando()">
+            {{ guardando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

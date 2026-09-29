@@ -10,5 +10,6 @@ setup(
     # si no están ya presentes. Esto evita errores de importación en los microservicios.
     install_requires=[
         "pydantic>=2.0,<3.0",
+        "httpx>=0.27,<1.0",
     ],
 )

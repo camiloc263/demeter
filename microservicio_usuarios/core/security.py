@@ -4,12 +4,14 @@ from typing import Optional
 from jose import jwt
 import hashlib
 
+from demeter_core.auth import JWT_ALGORITHM as ALGORITHM, JWT_SECRET_KEY as SECRET_KEY
+
 # Configuración de hashing para contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Configuración para el Token JWT (En producción esto va en variables de entorno)
-SECRET_KEY = "tu_clave_secreta_super_segura_demeter_granja"
-ALGORITHM = "HS256"
+# SECRET_KEY/ALGORITHM viven en demeter_core.auth: es la misma clave que usan
+# los demás servicios para VERIFICAR los tokens que este servicio emite aquí.
+# Se controla con la variable de entorno JWT_SECRET_KEY (ver ese módulo).
 ACCESS_TOKEN_EXPIRE_MINUTES = 60          # 1 hora
 REFRESH_TOKEN_EXPIRE_DAYS = 7             # 7 días
 

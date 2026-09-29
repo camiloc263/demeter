@@ -1,0 +1,82 @@
+<div class="page-head">
+  <div>
+    <h1>Alimentación</h1>
+    <p>Raciones de comida entregadas a cada corral.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirNuevo()">+ Registrar alimentación</button>
+</div>
+
+@if (cargando()) {
+  <div class="loading-row"><span class="spinner"></span> Cargando historial…</div>
+} @else if (registros().length === 0) {
+  <div class="card empty-state">
+    <span class="glyph">◑</span>
+    <p>No hay registros de alimentación todavía.</p>
+    <button type="button" class="btn btn-primary" (click)="abrirNuevo()">Registrar el primero</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Corral</th>
+          <th>Tipo de alimento</th>
+          <th>Cantidad</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of registros(); track r.id) {
+          <tr>
+            <td class="mono">{{ r.fecha_hora | date: 'd MMM, HH:mm' }}</td>
+            <td>{{ r.corral }}</td>
+            <td>{{ r.tipo_alimento }}</td>
+            <td class="num">{{ r.cantidad_kg }} kg</td>
+            <td class="actions">
+              <button type="button" class="btn btn-danger btn-sm" (click)="eliminar(r)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>Registrar alimentación</h2>
+        <button type="button" class="modal-close" (click)="cerrarModal()" aria-label="Cerrar">×</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="field">
+          <label for="corral">Corral</label>
+          <select id="corral" formControlName="corral">
+            <option value="" disabled>Selecciona un corral</option>
+            @for (c of corrales(); track c.id) { <option [value]="c.nombre">{{ c.nombre }}</option> }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="tipo">Tipo de alimento</label>
+          <input id="tipo" type="text" formControlName="tipo_alimento" placeholder="ej. Concentrado" />
+        </div>
+
+        <div class="field">
+          <label for="cantidad">Cantidad (kg)</label>
+          <input id="cantidad" type="number" min="0.1" step="0.1" formControlName="cantidad_kg" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || guardando()">
+            {{ guardando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,90 @@
+<div class="page-head">
+  <div>
+    <h1>Notificaciones</h1>
+    <p>Motor de alertas por WhatsApp. "Evaluar" deja que el modelo de ML decida si es buen momento; "Enviar alerta directa" despacha sin volver a evaluar (es lo que usa <code>ia_notificaciones</code> cuando decide algo urgente).</p>
+  </div>
+</div>
+
+<section class="card panel">
+  <h2>Evaluar si es buen momento para notificar</h2>
+  <form [formGroup]="formEvaluar" (ngSubmit)="evaluar()">
+    <div class="field-row">
+      <div class="field">
+        <label for="corral1">Corral</label>
+        <input id="corral1" type="text" formControlName="nombre_corral" placeholder="ej. Corral A" />
+      </div>
+      <div class="field">
+        <label for="tel1">Teléfono del trabajador</label>
+        <input id="tel1" type="text" formControlName="telefono_trabajador" placeholder="+573001234567" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="hora">Hora del día (0-24)</label>
+        <input id="hora" type="number" min="0" max="24" formControlName="hora_del_dia" />
+      </div>
+      <div class="field">
+        <label for="temp1">Temperatura actual (°C)</label>
+        <input id="temp1" type="number" formControlName="temperatura_actual_c" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="ayuno">Horas desde la última comida</label>
+        <input id="ayuno" type="number" min="0" formControlName="horas_desde_ultima_comida" />
+      </div>
+      <div class="field">
+        <label for="racion1">Ración pendiente (kg)</label>
+        <input id="racion1" type="number" min="0.1" step="0.1" formControlName="raciones_pendientes_kg" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="formEvaluar.invalid || evaluando()">
+      {{ evaluando() ? 'Evaluando…' : 'Evaluar' }}
+    </button>
+  </form>
+
+  @if (resultadoEvaluacion(); as r) {
+    <div class="resultado" [class.resultado-espera]="r.estado === 'EN_ESPERA'">
+      <span class="badge" [class.badge-accent]="r.estado === 'NOTIFICACION_ENVIADA'" [class.badge-neutral]="r.estado === 'EN_ESPERA'">
+        {{ r.estado === 'NOTIFICACION_ENVIADA' ? 'Notificación enviada' : 'En espera' }}
+      </span>
+      <p>{{ r.mensaje }}</p>
+    </div>
+  }
+</section>
+
+<section class="card panel">
+  <h2>Enviar alerta directa</h2>
+  <form [formGroup]="formDirecto" (ngSubmit)="enviarDirecto()">
+    <div class="field-row">
+      <div class="field">
+        <label for="tel2">Teléfono</label>
+        <input id="tel2" type="text" formControlName="numero_telefono" placeholder="+573001234567" />
+      </div>
+      <div class="field">
+        <label for="corral2">Corral</label>
+        <input id="corral2" type="text" formControlName="corral" placeholder="ej. Corral A" />
+      </div>
+      <div class="field">
+        <label for="racion2">Ración (kg)</label>
+        <input id="racion2" type="number" min="0.1" step="0.1" formControlName="racion_kg" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="motivo">Motivo</label>
+      <input id="motivo" type="text" formControlName="motivo_ia" placeholder="Razón de la alerta" />
+    </div>
+
+    <button type="submit" class="btn btn-secondary" [disabled]="formDirecto.invalid || enviando()">
+      {{ enviando() ? 'Enviando…' : 'Enviar alerta' }}
+    </button>
+  </form>
+
+  @if (resultadoDirecto(); as r) {
+    <div class="resultado">
+      <span class="badge badge-accent">{{ r.estado }}</span>
+      <p>{{ r.mensaje }}</p>
+    </div>
+  }
+</section>

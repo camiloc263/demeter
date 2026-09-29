@@ -1,0 +1,55 @@
+<div class="page-head">
+  <div>
+    <h1>Decisión automática de alertas</h1>
+    <p>Simula lo que el motor de <code>ia_notificaciones</code> decidiría con estas condiciones — omitir, notificar por email, o WhatsApp urgente. Si decide WhatsApp urgente, <strong>despacha de verdad</strong> hacia el servicio de notificaciones, no es solo una simulación.</p>
+  </div>
+</div>
+
+<section class="card panel">
+  <form [formGroup]="form" (ngSubmit)="evaluar()">
+    <div class="field-row">
+      <div class="field">
+        <label for="corral">Corral</label>
+        <input id="corral" type="text" formControlName="corral" placeholder="ej. Corral A" />
+      </div>
+      <div class="field">
+        <label for="tel">Teléfono a notificar</label>
+        <input id="tel" type="text" formControlName="numero_telefono" placeholder="+573001234567" />
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="temp">Temperatura (°C)</label>
+        <input id="temp" type="number" formControlName="temperatura_c" />
+      </div>
+      <div class="field">
+        <label for="hum">Humedad (%)</label>
+        <input id="hum" type="number" min="0" max="100" formControlName="humedad_pct" />
+      </div>
+      <div class="field">
+        <label for="peso">Peso promedio del lote (kg)</label>
+        <input id="peso" type="number" min="1" formControlName="peso_promedio_kg" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid || evaluando()">
+      {{ evaluando() ? 'Evaluando…' : 'Evaluar' }}
+    </button>
+  </form>
+
+  @if (decision(); as d) {
+    <div class="decision-resultado">
+      <div class="decision-cabecera">
+        <span class="badge" [ngClass]="claseAccion(d.accion)">{{ etiquetaAccion(d.accion) }}</span>
+        <span class="certeza">{{ (d.certeza * 100).toFixed(0) }}% de certeza</span>
+      </div>
+
+      @if (d.despacho_automatico) {
+        <div class="despacho">
+          <span class="despacho-label">Despacho automático</span>
+          <pre>{{ d.despacho_automatico | json }}</pre>
+        </div>
+      }
+    </div>
+  }
+</section>

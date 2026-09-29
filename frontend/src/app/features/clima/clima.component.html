@@ -1,0 +1,85 @@
+<div class="page-head">
+  <div>
+    <h1>Clima y bienestar</h1>
+    <p>Clima satelital en tiempo real (Open-Meteo) por coordenadas GPS, con diagnóstico de estrés calórico calculado por IA.</p>
+  </div>
+</div>
+
+<div class="clima-grid">
+  <section class="card panel">
+    <h2>Consultar clima de una granja</h2>
+    <form [formGroup]="form" (ngSubmit)="consultar()">
+      <div class="field">
+        <label for="granja">Nombre de la granja</label>
+        <input id="granja" type="text" formControlName="nombre_granja" placeholder="ej. Granja Demeter" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="lat">Latitud</label>
+          <input id="lat" type="number" step="0.0001" formControlName="latitud" />
+        </div>
+        <div class="field">
+          <label for="lon">Longitud</label>
+          <input id="lon" type="number" step="0.0001" formControlName="longitud" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="peso">Peso promedio de los cerdos (kg, opcional)</label>
+        <input id="peso" type="number" min="1" formControlName="peso_promedio_kg" />
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || consultando()">
+        {{ consultando() ? 'Consultando…' : 'Consultar clima' }}
+      </button>
+    </form>
+  </section>
+
+  <section class="card panel">
+    <h2>Último diagnóstico</h2>
+    @if (!ultimoResultado()) {
+      <div class="empty-state compact">
+        <span class="glyph">☁</span>
+        <p>Haz una consulta para ver el clima y el diagnóstico de bienestar aquí.</p>
+      </div>
+    } @else {
+      @if (ultimoResultado(); as r) {
+        <div class="latest-grid">
+          <div class="latest-card">
+            <span class="latest-label">Temperatura</span>
+            <span class="latest-value">{{ r.temperatura_c }}°C</span>
+          </div>
+          <div class="latest-card">
+            <span class="latest-label">Humedad</span>
+            <span class="latest-value">{{ r.humedad_pct }}%</span>
+          </div>
+        </div>
+        <p class="riesgo-row">
+          <span class="badge" [ngClass]="claseRiesgo(r.estado_riesgo)">{{ r.estado_riesgo || 'Sin evaluar' }}</span>
+          @if (r.certeza_ia) { <span class="certeza">{{ (r.certeza_ia) }}% de certeza</span> }
+        </p>
+        @if (r.mensaje_ia) { <p class="mensaje-ia">{{ r.mensaje_ia }}</p> }
+      }
+    }
+  </section>
+</div>
+
+@if (historial().length > 0) {
+  <h2 class="historial-titulo">Historial de {{ form.getRawValue().nombre_granja }}</h2>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Fecha</th><th>Temperatura</th><th>Humedad</th><th>Riesgo</th></tr></thead>
+      <tbody>
+        @for (r of historial(); track r.id) {
+          <tr>
+            <td class="mono">{{ r.fecha_registro | date: 'd MMM, HH:mm' }}</td>
+            <td class="num">{{ r.temperatura_c }}°C</td>
+            <td class="num">{{ r.humedad_pct }}%</td>
+            <td><span class="badge" [ngClass]="claseRiesgo(r.estado_riesgo)">{{ r.estado_riesgo || 'Sin evaluar' }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

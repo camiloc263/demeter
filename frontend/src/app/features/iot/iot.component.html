@@ -1,0 +1,59 @@
+<div class="page-head">
+  <div>
+    <h1>Sensores ambientales</h1>
+    <p>Lecturas de temperatura y humedad reportadas por los sensores de cada corral. Estas lecturas las envían los dispositivos directamente, no se registran a mano.</p>
+  </div>
+</div>
+
+@if (corrales().length === 0) {
+  <div class="card empty-state">
+    <span class="glyph">◈</span>
+    <p>No hay corrales creados todavía — crea uno primero en la sección Corrales.</p>
+  </div>
+} @else {
+  <div class="filter-row">
+    <label for="corral">Corral</label>
+    <select id="corral" [ngModel]="corralSeleccionado()" (ngModelChange)="seleccionar($event)" name="corral">
+      @for (c of corrales(); track c.id) { <option [value]="c.nombre">{{ c.nombre }}</option> }
+    </select>
+  </div>
+
+  @if (cargando()) {
+    <div class="loading-row"><span class="spinner"></span> Cargando lecturas…</div>
+  } @else if (sinLecturas()) {
+    <div class="card empty-state">
+      <span class="glyph">◈</span>
+      <p>Todavía no hay lecturas de sensores para "{{ corralSeleccionado() }}".</p>
+    </div>
+  } @else {
+    @if (ultima; as u) {
+      <div class="latest-grid">
+        <div class="latest-card card">
+          <span class="latest-label">Temperatura actual</span>
+          <span class="latest-value">{{ u.temperatura_c }}°C</span>
+        </div>
+        <div class="latest-card card">
+          <span class="latest-label">Humedad actual</span>
+          <span class="latest-value">{{ u.humedad_pct }}%</span>
+        </div>
+      </div>
+    }
+
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Fecha</th><th>Temperatura</th><th>Humedad</th></tr>
+        </thead>
+        <tbody>
+          @for (l of lecturas(); track l.id) {
+            <tr>
+              <td class="mono">{{ l.fecha_hora | date: 'd MMM, HH:mm:ss' }}</td>
+              <td class="num">{{ l.temperatura_c }}°C</td>
+              <td class="num">{{ l.humedad_pct }}%</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

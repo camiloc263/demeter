@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from db import models
-from schemas import registro
+from . import models
+from ..schemas import registro
 
 def registrar_consumo(db: Session, registro_in: registro.RegistroCreate):
     db_registro = models.RegistroAlimentacionORM(**registro_in.model_dump())

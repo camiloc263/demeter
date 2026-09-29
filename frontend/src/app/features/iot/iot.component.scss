@@ -1,0 +1,31 @@
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1.25rem;
+}
+.filter-row label { font-size: .82rem; color: var(--ink-muted); font-weight: 600; }
+.filter-row select {
+  font-family: inherit;
+  font-size: .86rem;
+  padding: .4rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.latest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 460px;
+}
+.latest-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.3rem;
+}
+.latest-label { font-size: .78rem; color: var(--ink-muted); margin-bottom: .3rem; }
+.latest-value { font-family: "Fraunces", serif; font-size: 1.8rem; font-weight: 600; color: var(--accent); }

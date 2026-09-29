@@ -1,0 +1,253 @@
+/* ---------- Tokens ---------- */
+:root {
+  --bg: #F5F7F1;
+  --surface: #FFFFFF;
+  --surface-2: #EEF1E7;
+  --ink: #1A2117;
+  --ink-muted: #5B6455;
+  --ink-faint: #8A9382;
+  --line: #DBE1D2;
+  --accent: #2F6B45;
+  --accent-hover: #275a3a;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DEEAE1;
+  --accent-2: #A8752F;
+  --accent-2-soft: #F1E4CC;
+  --danger: #B3432F;
+  --danger-soft: #F6E1DB;
+  --shadow-sm: 0 1px 2px rgba(26, 33, 23, 0.06);
+  --shadow-md: 0 4px 16px rgba(26, 33, 23, 0.08);
+  --radius: 8px;
+  --sidebar-w: 232px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--ink);
+}
+
+code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+a { color: var(--accent); }
+
+button { font-family: inherit; }
+
+::selection { background: var(--accent-soft); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-family: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  padding: .55rem 1rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--surface-2); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-muted);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--surface-2); color: var(--ink); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+}
+.btn-danger:hover:not(:disabled) { background: var(--danger-soft); }
+
+.btn-sm { padding: .35rem .7rem; font-size: .8rem; }
+
+/* ---------- Forms ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  margin-bottom: 1rem;
+}
+.field label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+.field input,
+.field select,
+.field textarea {
+  font-family: inherit;
+  font-size: .9rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  outline: none;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.field .hint { font-size: .74rem; color: var(--ink-faint); }
+.field .error { font-size: .78rem; color: var(--danger); }
+.field-row { display: flex; gap: 1rem; }
+.field-row .field { flex: 1; }
+
+/* ---------- Cards & tables ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+  min-width: 560px;
+}
+table.data th {
+  text-align: left;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  padding: .7rem .9rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+table.data td {
+  padding: .65rem .9rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+table.data tr:last-child td { border-bottom: none; }
+table.data tbody tr:hover { background: var(--surface-2); }
+table.data td.num { font-variant-numeric: tabular-nums; }
+table.data td.actions { text-align: right; white-space: nowrap; }
+
+/* ---------- Badges ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge-accent { background: var(--accent-soft); color: var(--accent); }
+.badge-amber { background: var(--accent-2-soft); color: var(--accent-2); }
+.badge-danger { background: var(--danger-soft); color: var(--danger); }
+.badge-neutral { background: var(--surface-2); color: var(--ink-muted); border: 1px solid var(--line); }
+
+/* ---------- Layout helpers ---------- */
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.page-head p { color: var(--ink-muted); margin: .35rem 0 0; font-size: .92rem; max-width: 60ch; }
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--ink-faint);
+}
+.empty-state .glyph { font-size: 2rem; display: block; margin-bottom: .75rem; }
+
+.spinner {
+  width: 20px; height: 20px;
+  border: 2.5px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-row { display: flex; align-items: center; justify-content: center; gap: .6rem; padding: 2.5rem; color: var(--ink-muted); }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 26, 17, 0.35);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4vh 1rem;
+  z-index: 900;
+  overflow-y: auto;
+  animation: fade-in .12s ease;
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 460px;
+  padding: 1.5rem 1.6rem 1.6rem;
+}
+.modal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+.modal-head h2 { font-size: 1.15rem; }
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.3rem; color: var(--ink-faint); line-height: 1;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+  margin-top: 1.4rem;
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

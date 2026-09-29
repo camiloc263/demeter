@@ -1,0 +1,48 @@
+.clima-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+  margin-bottom: 2rem;
+}
+
+.panel { padding: 1.4rem 1.5rem; }
+.panel h2 { font-size: 1.02rem; margin-bottom: 1rem; }
+
+.empty-state.compact { padding: 1.5rem 1rem; }
+.empty-state.compact .glyph { font-size: 1.6rem; }
+
+.latest-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.latest-card {
+  display: flex;
+  flex-direction: column;
+  padding: .9rem 1rem;
+  background: var(--surface-2);
+  border-radius: 8px;
+}
+.latest-label { font-size: .74rem; color: var(--ink-muted); margin-bottom: .25rem; }
+.latest-value { font-family: "Fraunces", serif; font-size: 1.5rem; font-weight: 600; color: var(--accent); }
+
+.riesgo-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0 0 .75rem;
+}
+.certeza { font-size: .8rem; color: var(--ink-faint); }
+
+.mensaje-ia {
+  font-size: .86rem;
+  color: var(--ink);
+  background: var(--surface-2);
+  border-radius: 6px;
+  padding: .7rem .85rem;
+  margin: 0;
+}
+
+.historial-titulo { font-size: 1.1rem; margin-bottom: .9rem; }

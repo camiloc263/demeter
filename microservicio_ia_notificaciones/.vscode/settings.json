@@ -1,0 +1,9 @@
+{
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/core_compartido"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/core_compartido"
+    ]
+}

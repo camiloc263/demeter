@@ -1,0 +1,46 @@
+<div class="page-head">
+  <div>
+    <h1>Reenvío (ml_ws)</h1>
+    <p>
+      <span class="badge badge-neutral">infraestructura</span>
+      Este servicio no gestiona un dominio propio — solo reenvía una alerta hacia
+      <code>microservicio_notificaciones:8010/notificar</code>. Se incluye aquí para tener
+      cobertura de los 12 microservicios, pero en la práctica es más simple llamar a
+      "Notificaciones → Enviar alerta directa" sin pasar por este proxy.
+    </p>
+  </div>
+</div>
+
+<section class="card panel">
+  <form [formGroup]="form" (ngSubmit)="reenviar()">
+    <div class="field-row">
+      <div class="field">
+        <label for="tel">Teléfono</label>
+        <input id="tel" type="text" formControlName="numero_telefono" placeholder="+573001234567" />
+      </div>
+      <div class="field">
+        <label for="corral">Corral</label>
+        <input id="corral" type="text" formControlName="corral" placeholder="ej. Corral A" />
+      </div>
+      <div class="field">
+        <label for="racion">Ración (kg)</label>
+        <input id="racion" type="number" min="0.1" step="0.1" formControlName="racion_kg" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="motivo">Motivo</label>
+      <input id="motivo" type="text" formControlName="motivo_ia" placeholder="Razón de la alerta" />
+    </div>
+
+    <button type="submit" class="btn btn-secondary" [disabled]="form.invalid || enviando()">
+      {{ enviando() ? 'Reenviando…' : 'Reenviar vía ml_ws' }}
+    </button>
+  </form>
+
+  @if (respuesta(); as r) {
+    <div class="resultado">
+      <span class="badge badge-accent">{{ r.status }}</span>
+      <pre>{{ r.detail | json }}</pre>
+    </div>
+  }
+</section>

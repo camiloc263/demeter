@@ -1,0 +1,21 @@
+.page-head p { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+
+.panel { padding: 1.4rem 1.5rem; max-width: 560px; }
+
+.resultado {
+  margin-top: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+.resultado pre {
+  margin: .6rem 0 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .78rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: .6rem .75rem;
+}

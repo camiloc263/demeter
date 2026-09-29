@@ -1,10 +1,13 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 
-# 1. URL DE LA BASE DE DATOS
-# Creará un archivo llamado 'granja.db' en tu carpeta raíz
-SQLALCHEMY_DATABASE_URL = "sqlite:///./cerdo.db"
+# Ruta absoluta anclada a este servicio (no depende del directorio de trabajo
+# desde el que se lance el proceso).
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.join(_BASE_DIR, 'cerdo.db')}"
 
 # 2. MOTOR DE CONEXIÓN
 # check_same_thread=False es necesario solo para SQLite en FastAPI

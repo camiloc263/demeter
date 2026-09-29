@@ -11,3 +11,10 @@ __pycache__/
 
 # Archivos de entorno (contraseñas, secretos)
 .env
+.env.local
+
+# Cache de pytest
+.pytest_cache/
+
+# Modelos placeholder vacíos generados en tiempo de ejecución
+microservicio_ml_ws/model.pkl

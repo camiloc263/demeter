@@ -1,0 +1,16 @@
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: 1.25rem;
+}
+.filter-row label { font-size: .82rem; color: var(--ink-muted); font-weight: 600; }
+.filter-row select {
+  font-family: inherit;
+  font-size: .86rem;
+  padding: .4rem .6rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
